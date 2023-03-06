@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<head>
+<script src="/assets/jquery.js"></script>
+<link href='https://fonts.google.com/specimen/Rubik+Bubbles/tester' rel='stylesheet' type='text/css'>
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<style>
+body {
+  font-family: helvetica, sans-serif;
+  margin: 0 auto;
+  max-width: 600px;
+  background: #323;
+}
+div {
+  height: 200px;
+  background-size: cover;
+  position: relative;
+  margin: 40px 0 0 0;
+  border-radius: 12px;
+}
+h1 {
+  font-family: 'Londrina Shadow', cursive;
+  text-align: center;
+  font-size: 75px;
+  color: #7182ab;
+  margin: 60px 0 0 0;
+}
+h2 {
+  text-align: center;
+  color: #ab9b71;
+  margin: 0px 0 70px 0;
+}
+p {
+  color: rgba(25,255,255,1);
+  background: black;
+  background: linear-gradient(bottom, rgba(4,2,5,1), rgba(0,0,0,.4));
+  background: -webkit-linear-gradient(bottom, rgba(0,0,0,1), rgba(0,0,0,.4));
+  background: -moz-linear-gradient(bottom, rgba(0,0,0,1), rgba(0,0,0,.4));
+  padding: 10px;
+  line-height: 28px;
+  text-align: justify;
+  position: absolute;
+  bottom: 0;
+  margin: 0;
+  height: 30px;
+  transition: height .5s;
+  -webkit-transition: height .5s;
+  -moz-transition: height .5s;
+}
+input {
+	font-size: 22px;
+}
+
+
+small {
+  opacity: 0;
+}
+
+.show-description p {
+  height: 150px;
+}
+
+.show-description small {
+  opacity: 1;
+}
+
+.first{
+  background-image: url(https://m.media-amazon.com/images/I/51PXVHt8J2L._AC_SY580_.jpg);
+}
+.second{
+  background-image: url(https://hips.hearstapps.com/del.h-cdn.co/assets/cm/15/10/480x480/54f961ba58f5e_-_hello-kitty-cookies.jpg?resize=1200:*);
+}
+.dessert{
+  background-image: url(https://i.pinimg.com/originals/8e/e1/05/8ee105e37fafb0a621d8c05d631768de.jpg);
+}
+.price {
+  float: right;
+}
+@media (max-width: 500px) {
+  h1 {
+    font-size: 50px;
+    margin-top: 20px;
+    line-height: 10px;
+  }
+  h2 {
+    font-size: 20px;
+    margin: 20px 0 30px 0;
+  }
+  div {
+    margin: 20px 12px 0 12px;
+  }
+  p {
+    font-size: 20px;
+    line-height: 24px;
+  }
+  small {
+    font-size: 16px;
+  }
+}
+
+</style>
+
+</head>
+
+<body>
+<h1>aliah's bakery</h1>
+<h2>Always fresh. Always Delicious!</h2>
+<div class="first">
+	<input class="quantities" type="number" min="0" style="width: 50px">
+  <p>hello kitty donuts <span class="price">$3.50</span><br />
+  <small>A  ring-shaped donut with colorful frosting and kitty ears!</small></p>
+</div>
+
+<div class="second">
+
+	<input class="quantities" type="number" min="0" style="width: 50px">
+  <p>hello kitty coookies!<span class="price">$2.50</span><br />
+  <small>A baked round dessert with sweet foasting that melts in your mouth the first bite you take. Also it has a hello kitty design on the front.</small></p>
+</div>
+  
+<div class="dessert">
+	<input class="quantities" type="number" min="0" style="width: 50px">
+  <p>hello kitty breakable <span class="price">$30</span><br />
+  <small>a hard chocolate shell with hello kitty on it you can break it open with the wooden hammer attached to it also it has sugar cotted starwberries on the sides!</small></p>
+</div>
+<br><br>
+  <input placeholder= "Your name" id="Name">
+  <input type="email" placeholder="Your email" id="Email">
+  <input type="submit" id="submit">
+<br><br>
+
+<script>
+  $('div').on('click', function() {
+      $(this).toggleClass('show-description');
+  });
+</script>
+
+</body>
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-app.js";
+  import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-database.js";
+  
+  
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyABeycrTsF7rl6wLfCYzVx2Ieak0OS2q9E",
+    authDomain: "abby2-4e7c0.firebaseapp.com",
+    projectId: "abby2-4e7c0",
+    storageBucket: "abby2-4e7c0.appspot.com",
+    messagingSenderId: "707382342591",
+    appId: "1:707382342591:web:09e70ef08882527ea9a70a"
+  };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+const Name = document.querySelector("#Name") 
+const Email = document.querySelector("#Email")
+document.querySelector('#submit').addEventListener('click', Submit)
+const quantities = document.querySelectorAll(".quantities") 
+const prices = document.querySelectorAll(".price")	
+const itemsList = ["kitty donuts", "kitty cookies", "breakable kitty"]
+	
+	
+	
+	function Submit() {
+		  const timestamp = buildTimestamp()
+  	  let cart = { }
+	  let total = 0
+  	  for  (let i=0; i<quantities.length; i=i+1) {
+  	  	if (quantities[i].value != "0" && quantities[i].value != "") {	
+let price = prices[i].innerHTML.replace('$', '')
+			  total = total + quantities[i].value * price 
+			
+  	  		cart[itemsList[i]] = parseInt(quantities[i].value) 
+  	  	}
+  	  	quantities[i].value = ""
+  	  }
+		
+	  
+		  set(ref(db, timestamp), {
+			  Name: Name.value,
+		      email: Email.value,
+			  cart: cart,
+			  totalPrice: total,
+		  paid: "not yet",
+		  });
+
+		  Name.value = ""
+		  Email.value = ""
+		}
+		function buildTimestamp() {
+			  const now = new Date();
+			  let timestamp = now.getFullYear().toString() + "/";
+			  //const month = now.toLocaleString('default', { month: 'long' });
+
+			  let month = now.getMonth()+1   //add 1 because Javascript uses 0 for January
+			  month = month.toString()
+			  month = addLeadingZero(month)
+			  timestamp += month + "/"; 
+
+			  let date = now.getDate().toString()
+			  date = addLeadingZero(date)
+			  timestamp += date + "/";
+
+			  let hours = now.getHours().toString()
+			  hours = addLeadingZero(hours)
+			  timestamp += hours + ":";
+
+			  let minutes = now.getMinutes().toString()
+			  minutes = addLeadingZero(minutes)
+			  timestamp += minutes + ":";
+
+			  let seconds = now.getSeconds().toString()
+			  seconds = addLeadingZero(seconds)
+			  timestamp += seconds;
+  
+			  return timestamp
+			}
+	
+			function addLeadingZero(units) {
+				if (units.length < 2) {
+					units = "0" + units
+				}
+				return units
+			}
+
+		
+	
+  
+
+
+</script>
+ 
